@@ -9,7 +9,7 @@ import 'dayjs/locale/es'
 
 dayjs.locale('es')
 
-const selectedDate = ref(dayjs('2023/01/01'))
+const selectedDate = ref(dayjs())
 
 const days = ref<CalendarDay[]>([])
 
