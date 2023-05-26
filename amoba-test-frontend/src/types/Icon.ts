@@ -1,0 +1,11 @@
+export type Icon =
+  | 'dashboard'
+  | 'transaction'
+  | 'schedule'
+  | 'user'
+  | 'setting'
+  | 'search'
+  | 'notification'
+  | 'calendar'
+  | 'chevron-right'
+  | 'chevron-left'

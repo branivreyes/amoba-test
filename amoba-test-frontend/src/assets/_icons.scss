@@ -1,0 +1,41 @@
+@mixin setIcon($iconName) {
+  -webkit-mask-image: url('/icons/' + $iconName);
+  mask-image: url('/icons/' + $iconName);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+
+  &.dashboard {
+    @include setIcon('dashboard.svg');
+  }
+  &.transaction {
+    @include setIcon('transaction.svg');
+  }
+  &.setting {
+    @include setIcon('setting.svg');
+  }
+  &.user {
+    @include setIcon('user.svg');
+  }
+  &.schedule {
+    @include setIcon('schedule.svg');
+  }
+  &.search {
+    @include setIcon('search.svg');
+  }
+  &.notification {
+    @include setIcon('notification.svg');
+  }
+  &.calendar {
+    @include setIcon('calendar.svg');
+  }
+  &.chevron-right {
+    @include setIcon('chevron-right.svg');
+  }
+  &.chevron-left {
+    @include setIcon('chevron-left.svg');
+  }
+}
