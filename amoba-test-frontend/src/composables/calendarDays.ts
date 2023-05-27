@@ -6,6 +6,26 @@ export function useCalendarDays(date: Ref<Dayjs>, daysMutator?: (day: CalendarDa
   const days = computed(() => {
     const calendarDays: CalendarDay[] = []
 
+    const createCalendarDays = (
+      iteration: number,
+      getDay: (number: number) => number,
+      getWeekDay: (number: number) => number,
+      outOfMonth = false
+    ) => {
+      Array.from({ length: iteration }, (_, number) => {
+        const calendarDay = new CalendarDay(
+          getDay(number),
+          undefined,
+          outOfMonth,
+          getWeekDay(number)
+        )
+
+        daysMutator && daysMutator(calendarDay)
+
+        calendarDays.push(calendarDay)
+      })
+    }
+
     const monthStartDay = date.value.startOf('month').day()
 
     const monthEndDay = date.value.endOf('month').day()
@@ -14,47 +34,36 @@ export function useCalendarDays(date: Ref<Dayjs>, daysMutator?: (day: CalendarDa
 
     const lastMonthEndDay = monthStartDay - 1
 
-    Array.from({ length: monthStartDay }, (_, number) => {
-      const startWeekDay = lastMonthEndDay - monthStartDay + 1
-      const weekDay = startWeekDay + number
-
-      const calendarDay = new CalendarDay(
-        lastMonthTotalDays - (lastMonthEndDay - number),
-        undefined,
-        true,
-        weekDay
-      )
-
-      daysMutator && daysMutator(calendarDay)
-
-      calendarDays.push(calendarDay)
-    })
+    createCalendarDays(
+      monthStartDay,
+      (number) => lastMonthTotalDays - (lastMonthEndDay - number),
+      (number) => {
+        const startWeekDay = lastMonthEndDay - monthStartDay + 1
+        return startWeekDay + number
+      },
+      true
+    )
 
     const daysInMonth = date.value.daysInMonth()
 
     let currentWeekDay = monthStartDay
 
-    Array.from({ length: daysInMonth }, (_, number) => {
-      if (currentWeekDay === 7) currentWeekDay = 0
+    createCalendarDays(
+      daysInMonth,
+      (number) => number + 1,
+      () => {
+        if (currentWeekDay === 7) currentWeekDay = 0
 
-      const calendarDay = new CalendarDay(number + 1, undefined, false, currentWeekDay)
+        return currentWeekDay++
+      }
+    )
 
-      daysMutator && daysMutator(calendarDay)
-
-      calendarDays.push(calendarDay)
-
-      currentWeekDay += 1
-    })
-
-    Array.from({ length: 6 - monthEndDay }, (_, number) => {
-      const weekDay = monthEndDay + (number + 1)
-
-      const calendarDay = new CalendarDay(number + 1, undefined, true, weekDay)
-
-      daysMutator && daysMutator(calendarDay)
-
-      calendarDays.push(calendarDay)
-    })
+    createCalendarDays(
+      6 - monthEndDay,
+      (number) => number + 1,
+      (number) => monthEndDay + (number + 1),
+      true
+    )
 
     return calendarDays
   })
