@@ -38,4 +38,7 @@
   &.chevron-left {
     @include setIcon('chevron-left.svg');
   }
+  &.loading {
+    @include setIcon('loading.svg');
+  }
 }

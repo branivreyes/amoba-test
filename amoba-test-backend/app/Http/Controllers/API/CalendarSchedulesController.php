@@ -7,7 +7,7 @@ use App\Http\Requests\IndexCalendarSchedules;
 use App\Reservation;
 use App\Route;
 use App\Service;
-use Illuminate\Http\Request;
+use App\Http\Resources\Route as RouteResource;
 
 class CalendarSchedulesController extends Controller
 {
@@ -50,7 +50,7 @@ class CalendarSchedulesController extends Controller
 
         return [
             'services' => $services,
-            'routes' => $routes,
+            'routes' => RouteResource::collection($routes),
             'reservations' => $reservations,
         ];
     }

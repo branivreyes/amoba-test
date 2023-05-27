@@ -3,6 +3,10 @@ defineProps<{
   name: string
   selected?: boolean
 }>()
+
+const emit = defineEmits<{
+  (e: 'onClick'): void
+}>()
 </script>
 
 <template>
@@ -11,6 +15,7 @@ defineProps<{
     :class="{
       'route--selected': selected
     }"
+    @click="emit('onClick')"
   >
     {{ name }}
   </div>
@@ -31,6 +36,7 @@ defineProps<{
   color: colors.$grey;
   font-size: 14px;
   width: 100%;
+  cursor: pointer;
 
   &--selected {
     background-color: colors.$light-grey-2;

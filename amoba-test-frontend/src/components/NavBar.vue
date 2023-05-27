@@ -33,20 +33,30 @@ const options: { to: string; title: string; icon: Icon }[] = [
 
 <template>
   <nav class="nav-bar">
-    <NavBarOption
-      v-for="(option, index) in options"
-      class="nav-bar__option"
-      :key="index"
-      :to="option.to"
-      :title="option.title"
-      :icon="option.icon"
-    />
+    <div class="nav-bar__options-container">
+      <NavBarOption
+        v-for="(option, index) in options"
+        class="nav-bar__option"
+        :key="index"
+        :to="option.to"
+        :title="option.title"
+        :icon="option.icon"
+      />
+    </div>
+
+    <div class="nav-bar__footer">
+      <span>Help</span>
+      <span>Contact Us</span>
+    </div>
   </nav>
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/colors';
 .nav-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 280px;
   height: 100%;
   padding-left: 50px;
@@ -60,6 +70,16 @@ const options: { to: string; title: string; icon: Icon }[] = [
     &:first-of-type {
       margin-top: 0;
     }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: colors.$white;
+    font-size: 14px;
+    font-weight: 400;
+    padding-bottom: 60px;
   }
 }
 </style>

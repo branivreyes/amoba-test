@@ -9,3 +9,4 @@ export type Icon =
   | 'calendar'
   | 'chevron-right'
   | 'chevron-left'
+  | 'loading'

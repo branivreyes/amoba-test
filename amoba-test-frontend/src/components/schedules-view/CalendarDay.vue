@@ -5,6 +5,7 @@ withDefaults(
   defineProps<{
     day: number
     status?: DayStatus
+    outOfMonth?: boolean
   }>(),
   {
     status: 'service'
@@ -16,7 +17,8 @@ withDefaults(
   <div
     class="calendar-day"
     :class="{
-      ['calendar-day--' + status]: true
+      ['calendar-day--' + status]: true,
+      ['calendar-day--out-of-month']: outOfMonth
     }"
   >
     {{ day }}

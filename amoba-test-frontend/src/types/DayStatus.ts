@@ -4,4 +4,3 @@ export type DayStatus =
   | 'booked'
   | 'service'
   | 'route-full-capacity'
-  | 'out-of-month'

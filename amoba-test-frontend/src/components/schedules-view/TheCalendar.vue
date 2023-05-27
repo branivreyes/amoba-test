@@ -1,48 +1,37 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, toRefs } from 'vue'
 import TheIcon from '../TheIcon.vue'
 import CalendarDayComponent from './CalendarDay.vue'
-import CalendarDay from '@/types/CalendarDay'
 import type { DayStatus } from '@/types/DayStatus'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/es'
+import { useCalendarDays } from '@/composables/calendarDays'
+import { WeekDay } from '@/types/WeekDay'
+import type CalendarDay from '@/types/CalendarDay'
 
 dayjs.locale('es')
 
-const selectedDate = ref(dayjs())
+const props = defineProps<{
+  modelValue: Dayjs
+  disabledWeekDays?: WeekDay[]
+}>()
 
-const days = ref<CalendarDay[]>([])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Dayjs): void
+}>()
 
-const monthStartDay = computed(() => selectedDate.value.startOf('month').day())
+const { modelValue: selectedDate } = toRefs(props)
 
-const monthEndDay = computed(() => selectedDate.value.endOf('month').day())
-
-const lastMonthTotalDays = computed(() => selectedDate.value.subtract(1, 'month').daysInMonth())
-
-const lastMonthEndDay = computed(() => monthStartDay.value - 1)
-
-Array.from({ length: monthStartDay.value }, (_, number) => {
-  days.value.push(
-    new CalendarDay(lastMonthTotalDays.value - (lastMonthEndDay.value - number), 'out-of-month')
+const keyedDisabledWeekDays = computed(() => {
+  return (
+    props.disabledWeekDays?.reduce<{ [key: number]: boolean }>((prev, current) => {
+      prev[current] = true
+      return prev
+    }, {}) || {}
   )
 })
 
-const daysInMonth = ref(selectedDate.value.daysInMonth())
-
-const dummyStatus: DayStatus[] = []
-
-dummyStatus[6] = 'disabled'
-dummyStatus[11] = 'route-full-capacity'
-dummyStatus[12] = 'booked'
-dummyStatus[18] = 'out-of-frecuency'
-
-Array.from({ length: daysInMonth.value }, (_, number) =>
-  days.value.push(new CalendarDay(number + 1, dummyStatus[number]))
-)
-
-Array.from({ length: 6 - monthEndDay.value }, (_, number) =>
-  days.value.push(new CalendarDay(number + 1, 'out-of-month'))
-)
+const { days } = useCalendarDays(selectedDate, calendarDaysMutator)
 
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -52,6 +41,18 @@ const headerMonth = computed(() => {
 
   return `${selectedMonth} ${selectedYear}`
 })
+
+function calendarDaysMutator(calendarDay: CalendarDay) {
+  if (keyedDisabledWeekDays.value[calendarDay.weekDay]) calendarDay.status = 'out-of-frecuency'
+}
+
+function goMonthBack() {
+  emit('update:modelValue', selectedDate.value.subtract(1, 'month'))
+}
+
+function goMonthForward() {
+  emit('update:modelValue', selectedDate.value.add(1, 'month'))
+}
 </script>
 
 <template>
@@ -60,9 +61,17 @@ const headerMonth = computed(() => {
       <h2 class="calendar__header__month">{{ headerMonth }}</h2>
 
       <div class="calendar__header__buttons">
-        <TheIcon class="calendar__header__buttons__button" icon="chevron-left" />
+        <TheIcon
+          class="calendar__header__buttons__button"
+          icon="chevron-left"
+          @click="goMonthBack"
+        />
 
-        <TheIcon class="calendar__header__buttons__button" icon="chevron-right" />
+        <TheIcon
+          class="calendar__header__buttons__button"
+          icon="chevron-right"
+          @click="goMonthForward"
+        />
       </div>
     </div>
 
@@ -76,6 +85,7 @@ const headerMonth = computed(() => {
         :key="index"
         :day="day.day"
         :status="day.status"
+        :out-of-month="day.outOfMonth"
       />
     </div>
   </div>
@@ -108,6 +118,7 @@ const headerMonth = computed(() => {
 
       &__button {
         background-color: colors.$black;
+        cursor: pointer;
 
         &:nth-child(2) {
           margin-left: 22px;
